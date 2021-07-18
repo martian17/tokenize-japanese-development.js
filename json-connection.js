@@ -60,6 +60,8 @@ let addConnections = function(tokens,connections){
 };
 
 
+
+
 let main = async function(){
     let traindir = "etc/train-data";
     let files = (await fs.readdir(traindir)).map(a=>path.join(traindir,a));
@@ -77,6 +79,9 @@ let main = async function(){
         console.log("./obj/grammar.json write failed");
         return false;
     }
+    
+    
+    
     
     
     //debug code
