@@ -10,6 +10,7 @@ let main = async function(){
     await fs.mkdir("./obj");
     writeConnections();
     convertDict();
+    fs.copyFile("./src/main.js", "./obj/main.js");
 };
 
 main();

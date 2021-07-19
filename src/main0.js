@@ -1,3 +1,23 @@
+let Trie = function(){
+    let tree = [{},null];
+    //subtree leaf
+    this.add = function(id,val){
+        let subtree = tree;
+        for(let i = 0; i < id.length; i++){
+            let char = id[i];
+            let siblings = subtree[0];
+            if(!(char in siblings)){
+                siblings[char] = [{},null];
+            }
+            subtree = subtree[char];
+        }
+        subtree[1] = val;
+    }
+    this.find = function(word){
+        
+    }
+}
+
 let MultiTrie = function(){
     let tree = [{},[]];
     //subtree leaf
@@ -31,11 +51,8 @@ let MultiTrie = function(){
     }
 };
 
-
-
-let JapaneseParser = function(/*rootPath*/){//argument will be set after the testing phase is done
-    //some utility function
-    let rootPath = window.location.origin;
+let JapaneseParser = function(rootPath){
+    //let url = window.location.origin;
     let loadJson = async function(path){
         let response = await fetch(rootPath+path);
         return await response.json();
@@ -44,31 +61,35 @@ let JapaneseParser = function(/*rootPath*/){//argument will be set after the tes
         let response = await fetch(rootPath+path);
         return await response.text();
     };
+    
     let Word = function(attr){
         this.word = attr[0];
         this.category = attr.slice(4,6).join(",");
         this.origin = attr;
     };
     
-    
-    let grammar;
-    let multiTrie;
-    let init = async function(){
-        //this can be improved using more promises and more concurrent optimization
-        //loading the grammar
-        grammar = await loadJson("/grammar.json");
-        //loading the dict
-        let csv = await getText("/dict.csv").split("\n");
-        multiTrie = new MultiTrie();
+    let buildDict = async function(dict, catname, id){
+        let csv = await getText("/dict/"+id+".csv").split("\n");
+        let trie = new Trie();
         for(let i = 0; i < csv.length; i++){
-            let line = csv[i];
-            let word = new Word(line.split(","));
-            multiTrie.add(word.word,word);
+            let word = new Word(csv[i].split(","));
+            trie.add(word.word,word);
         }
+        return trie;
     };
     
+    let init = async function(){
+        let mapping = await loadJson("/mapping.json");
+        
+        let dict = {};
+        let awaiting = [];
+        for(let catname in mapping){
+            awaiting.push((dict,catname,mapping[catname]));
+        }
+    }
     
-    //okay, finally! this is where the fun begins
+    
+    //okay, finally! this is where fun begins
     let findNextWord = function(str,pointer,previousCategory){
         let matches = multiTrie.findAllPossibleMatches(str,pointer);
         if(matches.length === 0){
@@ -91,11 +112,11 @@ let JapaneseParser = function(/*rootPath*/){//argument will be set after the tes
                 if(matches.length !== 0){
                     //found a word ending
                     //仕舞い,1285,1285,5543,名詞,一般,*,*,*,*,仕舞い,シマイ,シマイ
-                    return new Word([ww,0,0,0,"名詞","一般","*","*","*","*",ww,ww,ww]);
+                    return new Word(ww,[ww,0,0,0,"名詞","一般","*","*","*","*",ww,ww,ww]);
                 }
                 ww += str[i];
             }
-            return new Word([ww,0,0,0,"名詞","一般","*","*","*","*",ww,ww,ww]);
+            return new Word(ww,[ww,0,0,0,"名詞","一般","*","*","*","*",ww,ww,ww]);
         }
     };
     
@@ -117,20 +138,9 @@ let JapaneseParser = function(/*rootPath*/){//argument will be set after the tes
     
     
     //lastly, do some loading action since this library ain't gonna be ready unril every json and csv files load up
-    let loadResolver = ()=>{};
-    let loaded = false;
     this.waitLoad = function(){
         return new Promise((res,rej)=>{
-            if(loaded){
-                res();
-            }else{
-                loadResolver = res;
-            }
+            
         });
     };
-    
-    init().then(()=>{
-        loaded = true;
-        loadResolver();
-    });
 };
