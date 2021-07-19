@@ -2,7 +2,7 @@ let fs = require("fs").promises;
 let path = require("path");
 
 let main = async function(){
-    let dictdir = "./src/dict";
+    let dictdir = "./etc/dict";
     let files = (await fs.readdir(dictdir)).map(a=>path.join(dictdir,a));
     let dictStrs = [];
     for(let i = 0; i < files.length; i++){
@@ -23,4 +23,4 @@ let main = async function(){
     await fs.writeFile(filename,fileContent);//adding to the promise list
 };
 
-main();
+module.exports = main;

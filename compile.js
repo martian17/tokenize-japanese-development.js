@@ -10,7 +10,7 @@ let main = async function(){
     await fs.mkdir("./obj");
     writeConnections();
     convertDict();
-    fs.copyFile("./src/main.js", "./obj/main.js");
+    fs.copyFile("./src/tokenize-japanese.js", "./obj/tokenize-japanese.js");
 };
 
 main();
