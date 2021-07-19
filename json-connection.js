@@ -95,5 +95,6 @@ let main = async function(){
     */
 };
 
-main();
+module.exports = main;
+
 
