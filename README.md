@@ -16,4 +16,4 @@ japaneseParser.waitLoad().then(()=>{
     console.log(result);
 });
 ```
-!(example)[https://github.com/martian17/tokenize-japanese.js/blob/main/img/example.png?raw=true]
+![example](https://github.com/martian17/tokenize-japanese.js/blob/main/img/example.png?raw=true)
